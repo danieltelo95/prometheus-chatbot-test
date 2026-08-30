@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from "react"
 import { createAvatar } from "@prometheusavatar/core"
+import * as PIXI from "pixi.js"
+
+// pixi-live2d-display v0.4 discovers its animation ticker through window.PIXI.
+// Without this, the model draws once but pose opacity (including arm variants)
+// never updates.
+const browserWindow = window as typeof window & { PIXI: typeof PIXI }
+browserWindow.PIXI = PIXI
 
 export function Avatar() {
 

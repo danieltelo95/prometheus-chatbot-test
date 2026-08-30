@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { forwardRef, useImperativeHandle, useEffect, useRef, useState } from "react"
 import { createAvatar } from "@prometheusavatar/core"
 import * as PIXI from "pixi.js"
 
@@ -8,11 +8,27 @@ import * as PIXI from "pixi.js"
 const browserWindow = window as typeof window & { PIXI: typeof PIXI }
 browserWindow.PIXI = PIXI
 
-export function Avatar() {
+export type AvatarHandle = {
+    speak: (text: string) => Promise<void>
+}
+
+export const Avatar = forwardRef<AvatarHandle>(function Avatar(_, ref) {
 
     const containerRef = useRef<HTMLDivElement>(null)
+
+    const avatarRef = useRef<Awaited<ReturnType<typeof createAvatar>> | null>(null)
     const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
     const [errorMessage, setErrorMessage] = useState('')
+
+    useImperativeHandle(ref, () => ({
+        speak: async (text: string) => {
+            if(!avatarRef.current) {
+                return;
+            }
+
+            await avatarRef.current.speak(text);
+        }
+    }))
 
     useEffect(()=>{
         if(!containerRef.current) return;
@@ -22,7 +38,7 @@ export function Avatar() {
         const init = async () => {
 
         try {
-                avatar = await createAvatar({
+                const avatar = await createAvatar({
                     container: containerRef.current!,
                     modelUrl: "https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display@0.4.0/test/assets/haru/haru_greeter_t03.model3.json",
                     width: 800,
@@ -35,15 +51,16 @@ export function Avatar() {
                     return;
                 }
 
-                console.log('Avatar loaded', avatar)
+                avatarRef.current = avatar;
+                
                 setStatus('ready')
-
+                
                 avatar?.on('emotion:change', ({ result }) => {
                     console.log(`Emotion: ${result.emotion} (${result.confidence})`
                     );
                 });
 
-                await avatar?.speak ('Hello! I\'m your AI assistant')
+                await avatar?.speak("Hello! I'm your AI assistant")
         } catch (error) {
             console.error('Error loading avatar: ', error)
             if (!cancelled) {
@@ -52,15 +69,14 @@ export function Avatar() {
             }
         }
     }
-        init();
+        void init();
 
         return () => {
             cancelled = true;
-            avatar?.destroy();
+            avatarRef.current?.destroy();
+            avatarRef.current = null;
         };
     }, []);
-
-
 
     return (
         <section className="avatar-shell">
@@ -78,6 +94,5 @@ export function Avatar() {
                 </div>
             )}
         </section>
-
     )
-}
+});

@@ -1,7 +1,11 @@
 import { useState } from "react"
 import type { SyntheticEvent } from "react"
 
-export function Chat() {
+type ChatProps = {
+    onAssistantResponse: (message: string) => Promise<void>;
+}
+
+export function Chat({ onAssistantResponse }: ChatProps) {
     const [message, setMessage] = useState("")
     const [response, setResponse] = useState("")
 
@@ -22,6 +26,8 @@ export function Chat() {
 
     setResponse(data.message);
     setMessage("")
+
+    await onAssistantResponse(data.message)
     };
 
     return(

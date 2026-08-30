@@ -8,3 +8,13 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Python / Django
+__pycache__/
+*.py[cod]
+*.sqlite3
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+staticfiles/

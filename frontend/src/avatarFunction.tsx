@@ -66,7 +66,7 @@ export function Avatar() {
         <section className="avatar-shell">
             <header>
                 <p className="eyebrow">AI assistant</p>
-                <h1>Prometheus Avatar</h1>
+                <h1>VocalSilence assistant</h1>
                 <p>{status === 'ready' ? 'Your assistant is ready.' : 'Preparing your assistant…'}</p>
             </header>
             <div className="avatar-stage" ref={containerRef} aria-label="Animated AI avatar" />

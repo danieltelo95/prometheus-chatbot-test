@@ -36,7 +36,7 @@ export function Avatar() {
                     );
                 });
 
-                await avatar?.speak ('Hello! I\'m your AI assistant. 😊')
+                await avatar?.speak ('Hello! I\'m your AI assistant')
         } catch (error) {
             console.error('Error loading avatar: ', error)
             if (!cancelled) {
